@@ -1,51 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import "./App.css";
 
-export default function Calendar() {
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+const Calendar = () => {
+  // Set the initial date to the current date
+  const [date, setDate] = useState(new Date());
 
-  const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
-  const lastDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
-  const daysInMonth = lastDayOfMonth.getDate();
-  const monthStartIndex = firstDayOfMonth.getDay();
-  const monthEndIndex = lastDayOfMonth.getDay();
+  // Get the days of the week as an array
+  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-  const prevMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
+  // Get the days in the current month as an array
+  const getDaysInMonth = () => {
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const days = [];
+
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push(new Date(year, month, i));
+    }
+
+    return days;
   };
 
-  const nextMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
-  };
-
+  // Render the calendar
   return (
-    <div>
-      <h2>{currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h2>
-      <button onClick={prevMonth}>Prev</button>
-      <button onClick={nextMonth}>Next</button>
-      <table>
-        <thead>
-          <tr>
-            {days.map((day) => (
-              <th key={day}>{day}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {[...Array(Math.ceil((daysInMonth + monthStartIndex) / 7))].map((row, rowIndex) => (
-            <tr key={rowIndex}>
-              {[...Array(7)].map((cell, cellIndex) => {
-                const day = rowIndex * 7 + cellIndex + 1 - monthStartIndex;
-                return (
-                  <td key={cellIndex}>
-                    {day > 0 && day <= daysInMonth && <span>{day}</span>}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="calendar">
+      <div className="calendar-header">
+        <button onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() - 1))}>
+          Prev
+        </button>
+        <h2>{date.toLocaleString("default", { month: "long", year: "numeric" })}</h2>
+        <button onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() + 1))}>
+          Next
+        </button>
+      </div>
+      <div className="calendar-grid">
+        {daysOfWeek.map((dayOfWeek) => (
+          <div key={dayOfWeek} className="calendar-day-of-week">
+            {dayOfWeek}
+          </div>
+        ))}
+        {getDaysInMonth().map((day) => (
+          <div key={day.getTime()} className="calendar-day">
+            {day.getDate()}
+          </div>
+        ))}
+      </div>
     </div>
   );
-}
+};
+
+export default Calendar;
